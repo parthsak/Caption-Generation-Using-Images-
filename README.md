@@ -1,1 +1,3 @@
 # Caption-Generation-Using-Images-
+
+Describing the content of an image is one of the fundamental tasks that ultimately connects NLP and Computer Vision. It is inspired by works in the field of machine translation and object detection. Studying the region between visuals and language could point to a deeper vein of advancement that, once discovered, could lead to more advanced machines. It may be beneficial to retrieve portions of images which allows us to represent visual or image-based content in new ways. We want to accomplish this goal by using a model based on current advancements in computer vision and machine translation.
