@@ -1,13 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
-
-
-
-
-# In[1]:
 
 
 
@@ -36,7 +30,7 @@ from PIL import Image
 from tqdm import tqdm
 
 
-# In[2]:
+
 
 
 import glob
@@ -48,7 +42,7 @@ import wordcloud
 from wordcloud import WordCloud, STOPWORDS
 
 
-# In[4]:
+
 
 
 images='/Users/images'
@@ -56,7 +50,7 @@ all_imgs = glob.glob(images + '/*.jpg',recursive=True)
 print("The total images present in the dataset: {}".format(len(all_imgs)))
 
 
-# In[5]:
+
 
 
 import imageio
@@ -68,7 +62,7 @@ for ax, image in zip(axes, Display_Images):
   ax.imshow(imageio.imread(image), cmap=None)
 
 
-# In[6]:
+
 
 
 import random
@@ -77,7 +71,6 @@ import random
 Image.open(all_imgs[random.randrange(40, 60, 3)])
 
 
-# In[7]:
 
 
 text_file = '/Users/captions.txt'
@@ -90,7 +83,7 @@ doc = load_doc(text_file)
 print(doc[:300])
 
 
-# In[8]:
+
 
 
 img_path = '/Users/images/'
@@ -112,7 +105,7 @@ df = pd.DataFrame(list(zip(all_img_id, all_img_vector,annotations)),columns =['I
 df
 
 
-# In[9]:
+
 
 
 #check total captions and images present in dataset
@@ -120,7 +113,7 @@ print("Total captions present in the dataset: "+ str(len(annotations)))
 print("Total images present in the dataset: " + str(len(all_imgs)))
 
 
-# In[10]:
+
 
 
 #Create the vocabulary & the counter for the captions
@@ -129,7 +122,7 @@ val_count = Counter(vocabulary)
 val_count
 
 
-# In[11]:
+
 
 
 #Visualise the top 30 occuring words in the captions
@@ -144,7 +137,7 @@ plt.xlabel("Words", fontsize = 14, color= 'navy')
 plt.ylabel("Count", fontsize = 14, color= 'navy')
 
 
-# In[12]:
+
 
 
 def caption_with_img_plot(image_id, frame) :
@@ -159,7 +152,7 @@ def caption_with_img_plot(image_id, frame) :
 caption_with_img_plot(df.ID.iloc[8040], df)
 
 
-# In[13]:
+
 
 
 #data cleaning
@@ -181,7 +174,7 @@ for r in range(len(annotations)) :
   annotations[r] = ' '.join(line)
 
 
-# In[14]:
+
 
 
 #add the <start> & <end> token to all those captions as well
@@ -191,14 +184,14 @@ annotations = ['<start>' + ' ' + line + ' ' + '<end>' for line in annotations]
 all_img_path = all_img_vector
 
 
-# In[15]:
+
 
 
 ##list contatining captions for an image
 annotations[0:5]
 
 
-# In[16]:
+
 
 
 # Creating the tokenizer
@@ -208,7 +201,7 @@ tokenizer = Tokenizer(num_words = top_word_cnt+1, filters= '!"#$%^&*()_+.,:;-?/~
                       oov_token = 'UNK')
 
 
-# In[17]:
+
 
 
 # Creating word-to-index and index-to-word mappings.
@@ -218,7 +211,6 @@ tokenizer.fit_on_texts(annotations)
 train_seqs = tokenizer.texts_to_sequences(annotations)
 
 
-# In[18]:
 
 
 # We add PAD token for zero
@@ -226,20 +218,19 @@ tokenizer.word_index['PAD'] = 0
 tokenizer.index_word[0] = 'PAD'
 
 
-# In[19]:
 
 
 print(tokenizer.oov_token)
 print(tokenizer.index_word[0])
 
 
-# In[20]:
+
 
 
 tokenizer.index_word
 
 
-# In[21]:
+
 
 
 # Creating a word count for our tokenizer to visualize the Top 30 occuring words after text processing
@@ -250,7 +241,7 @@ tokenizer_top_words = [word for line in annotations for word in line.split() ]
 tokenizer_top_words_count = collections.Counter(tokenizer_top_words)
 
 
-# In[22]:
+
 
 
 for word, count in tokenizer_top_words_count.most_common(30) :
@@ -267,7 +258,7 @@ plt.ylabel('Counts', fontsize =14, color= 'navy')
 plt.grid(b=None)
 
 
-# In[26]:
+
 
 
 # Pad each vector to the max_length of the captions  store it to a vairable
@@ -281,7 +272,7 @@ cap_vector= tf.keras.preprocessing.sequence.pad_sequences(train_seqs, padding= '
 print("The shape of Caption vector is :" + str(cap_vector.shape))
 
 
-# In[27]:
+
 
 
 # creating list to store preprocessed images and setting up the Image Shape
@@ -290,7 +281,6 @@ preprocessed_image = []
 IMAGE_SHAPE = (299, 299)
 
 
-# In[28]:
 
 
 #checking image format 
@@ -298,7 +288,7 @@ IMAGE_SHAPE = (299, 299)
 tf.keras.backend.image_data_format()
 
 
-# In[29]:
+
 
 
 for img in all_imgs[0:5] :
@@ -309,7 +299,7 @@ for img in all_imgs[0:5] :
     preprocessed_image.append(img)
 
 
-# In[30]:
+
 
 
 # checking first five images post preprocessing
@@ -322,8 +312,6 @@ for ax, image in zip(axes, Display_Images) :
   ax.grid('off')
 
 
-# In[31]:
-
 
 def load_images(image_path) :
   img = tf.io.read_file(image_path, name = None)
@@ -333,7 +321,7 @@ def load_images(image_path) :
   return img, image_path
 
 
-# In[33]:
+
 
 
 # Map each image full path to the function, in order to preprocess the image
@@ -343,15 +331,11 @@ New_Img = New_Img.map(load_images, num_parallel_calls = tf.data.experimental.AUT
 New_Img = New_Img.batch(64, drop_remainder=False)
 
 
-# In[34]:
+
 
 
 #Ratio = 80:20 and we will set random state = 42
 path_train, path_test, caption_train, caption_test = train_test_split(all_img_vector, cap_vector, test_size = 0.2, random_state = 42)
-
-
-# In[35]:
-
 
 print("Training data for images: " + str(len(path_train)))
 print("Testing data for images: " + str(len(path_test)))
@@ -359,7 +343,7 @@ print("Training data for Captions: " + str(len(caption_train)))
 print("Testing data for Captions: " + str(len(caption_test)))
 
 
-# In[36]:
+
 
 
 image_model = tf.keras.applications.InceptionV3(include_top=False,weights='imagenet')
@@ -368,15 +352,12 @@ hidden_layer = image_model.layers[-1].output
 image_features_extract_model = tf.compat.v1.keras.Model(new_input, hidden_layer)
 
 
-# In[37]:
-
 
 # Once the features are created, you need to reshape them such that feature shape is in order of (batch_size, 8*8, 2048)
 image_features_extract_model.summary()
 
 
 # In[38]:
-
 
 # extract features from each image in the dataset
 img_features = {}
@@ -388,26 +369,14 @@ for image, image_path in tqdm(New_Img) :
     feature_path = path.numpy().decode('utf-8')
     img_features[feature_path] = batch_feat.numpy()
 
-
-# In[39]:
-
-
 batch_features
 
-
-# In[40]:
-
-
 batch_features_flattened
-
-
-# In[41]:
-
 
 batch_feat.shape
 
 
-# In[42]:
+
 
 
 #view top five items of img_features dict
@@ -416,7 +385,6 @@ top_5 = more_itertools.take(5, img_features.items())
 top_5
 
 
-# In[43]:
 
 
 #to provide, both images along with the captions as input
@@ -425,7 +393,7 @@ def map(image_name, caption):
     return img_tensor, caption
 
 
-# In[44]:
+
 
 
 # This function should transform the created dataset(img_path,cap) to (features,cap) using the map_func created earlier
@@ -443,14 +411,12 @@ def gen_dataset(img, capt):
     return data
 
 
-# In[45]:
-
 
 train_dataset = gen_dataset(path_train,caption_train)
 test_dataset = gen_dataset(path_test,caption_test)
 
 
-# In[46]:
+
 
 
 sample_img_batch, sample_cap_batch = next(iter(train_dataset))
@@ -458,7 +424,7 @@ print(sample_img_batch.shape)  #(batch_size, 8*8, 2048)
 print(sample_cap_batch.shape) #(batch_size,max_len)
 
 
-# In[47]:
+
 
 
 # Setting  parameters
@@ -476,14 +442,14 @@ feature_shape = batch_feat.shape[1]
 attention_feature_shape = batch_feat.shape[0]
 
 
-# In[48]:
+
 
 
 tf.compat.v1.reset_default_graph()
 print(tf.compat.v1.get_default_graph())
 
 
-# In[49]:
+
 
 
 #Building Encoder using CNN Keras subclassing method
@@ -499,19 +465,15 @@ class Encoder(Model):
         return features
 
 
-# In[50]:
-
-
 encoder=Encoder(embedding_dim)
 
 
-# In[51]:
+
 
 
 from keras.utils.vis_utils import plot_model
 
 
-# In[52]:
 
 
 class Attention_model(Model):
@@ -531,7 +493,7 @@ class Attention_model(Model):
         return context_vector, attention_weights
 
 
-# In[53]:
+
 
 
 class Decoder(Model):
@@ -560,13 +522,13 @@ class Decoder(Model):
         return tf.zeros((batch_size, self.units))
 
 
-# In[54]:
+
 
 
 decoder=Decoder(embedding_dim, units, vocab_size)
 
 
-# In[55]:
+
 
 
 features=encoder(sample_img_batch)
@@ -580,14 +542,10 @@ print('Predcitions shape from Decoder: {}'.format(predictions.shape)) #(batch,vo
 print('Attention weights shape from Decoder: {}'.format(attention_weights.shape)) #(batch, 8*8, embed_dim)
 
 
-# In[56]:
-
 
 optimizer = tf.keras.optimizers.Adam(learning_rate = 0.001)  #define the optimizer
 loss_object = tf.keras.losses.SparseCategoricalCrossentropy(from_logits = True, reduction = tf.keras.losses.Reduction.NONE) #define your loss object
 
-
-# In[57]:
 
 
 def loss_function(real, pred):
@@ -601,8 +559,6 @@ def loss_function(real, pred):
     return tf.reduce_mean(loss_)
 
 
-# In[58]:
-
 
 checkpoint_path = "Flickr8K/checkpoint1"
 ckpt = tf.train.Checkpoint(encoder=encoder,
@@ -611,7 +567,7 @@ ckpt = tf.train.Checkpoint(encoder=encoder,
 ckpt_manager = tf.train.CheckpointManager(ckpt, checkpoint_path, max_to_keep=5)
 
 
-# In[59]:
+
 
 
 start_epoch = 0
@@ -619,7 +575,6 @@ if ckpt_manager.latest_checkpoint:
     start_epoch = int(ckpt_manager.latest_checkpoint.split('-')[-1])
 
 
-# In[60]:
 
 
 @tf.function
@@ -644,7 +599,7 @@ def train_step(img_tensor, target):
     return loss, avg_loss
 
 
-# In[61]:
+
 
 
 @tf.function
@@ -665,7 +620,6 @@ def test_step(img_tensor, target):
     return loss, avg_loss
 
 
-# In[62]:
 
 
 def test_loss_cal(test_dataset):
@@ -678,7 +632,7 @@ def test_loss_cal(test_dataset):
     return avg_test_loss
 
 
-# In[63]:
+
 
 
 loss_plot = []
@@ -703,7 +657,6 @@ for epoch in tqdm(range(0, EPOCHS)):
         ckpt_manager.save()
 
 
-# In[64]:
 
 
 from matplotlib.pyplot import figure
@@ -717,7 +670,6 @@ plt.legend()
 plt.show()
 
 
-# In[65]:
 
 
 def evaluate(image):
@@ -750,7 +702,7 @@ def evaluate(image):
     return result, attention_plot,predictions
 
 
-# In[66]:
+
 
 
 def plot_attention_map (caption, weights, image) :
@@ -774,13 +726,13 @@ def plot_attention_map (caption, weights, image) :
   plt.show()
 
 
-# In[67]:
+
 
 
 from nltk.translate.bleu_score import sentence_bleu
 
 
-# In[68]:
+
 
 
 def filt_text(text):
@@ -791,13 +743,13 @@ def filt_text(text):
     return text
 
 
-# In[69]:
+
 
 
 image_test = path_test.copy()
 
 
-# In[70]:
+
 
 
 def pred_caption_audio(random, autoplay=False, weights=(0.5, 0.5, 0, 0)) :
@@ -827,63 +779,50 @@ def pred_caption_audio(random, autoplay=False, weights=(0.5, 0.5, 0, 0)) :
     return test_image
 
 
-# In[71]:
 
-
-test_image = pred_caption_audio(len(image_test), True, weights = (0.5, 0.25, 0, 0))
-Image.open(test_image)
-
-
-# In[72]:
 
 
 test_image = pred_caption_audio(len(image_test), True, weights = (0.5, 0.25, 0, 0))
 Image.open(test_image)
 
 
-# In[73]:
+
 
 
 test_image = pred_caption_audio(len(image_test), True, weights = (0.5, 0.25, 0, 0))
 Image.open(test_image)
 
 
-# In[74]:
+
+
+
+test_image = pred_caption_audio(len(image_test), True, weights = (0.5, 0.25, 0, 0))
+Image.open(test_image)
+
+test_image = pred_caption_audio(len(image_test), True, weights = (0.5, 0.5, 0, 0))
+Image.open(test_image)
+
+
 
 
 test_image = pred_caption_audio(len(image_test), True, weights = (0.5, 0.5, 0, 0))
 Image.open(test_image)
 
 
-# In[75]:
 
-
-test_image = pred_caption_audio(len(image_test), True, weights = (0.5, 0.5, 0, 0))
+test_image = pred_caption_audio(len(image_test), True, weights = (0.25, 0.25, 0, 0))
 Image.open(test_image)
 
 
-# In[76]:
 
 
 test_image = pred_caption_audio(len(image_test), True, weights = (0.25, 0.25, 0, 0))
 Image.open(test_image)
 
 
-# In[77]:
-
-
 test_image = pred_caption_audio(len(image_test), True, weights = (0.25, 0.25, 0, 0))
 Image.open(test_image)
 
-
-# In[78]:
-
-
-test_image = pred_caption_audio(len(image_test), True, weights = (0.25, 0.25, 0, 0))
-Image.open(test_image)
-
-
-# In[ ]:
 
 
 
